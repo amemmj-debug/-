@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل متابعة الطلاب</title>
+    <link rel="stylesheet" href="index.css">
+    <script type="module" src="index.tsx"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>سجل متابعة الطلاب</h1>
+        <div class="class-tabs-container">
+            <!-- Class tabs will be inserted here by TypeScript -->
+        </div>
+        <div class="controls-container">
+            <button id="add-student-btn" class="control-btn">إضافة طالب</button>
+            <button id="import-students-btn" class="control-btn">استيراد أسماء</button>
+            <button id="increase-fields-btn" class="control-btn">زيادة الحصص (+5)</button>
+            <button id="export-csv-btn" class="control-btn">تصدير إلى CSV</button>
+            <button id="print-table-btn" class="control-btn">طباعة السجل 🖨️</button>
+            <button id="import-data-btn" class="control-btn">استيراد البيانات</button>
+            <button id="export-data-btn" class="control-btn">تصدير البيانات</button>
+            <button id="share-app-btn" class="control-btn">مشاركة التطبيق 📤</button>
+            <button id="open-in-new-window-btn" class="control-btn">فتح بنافذة مستقلة 🔗</button>
+            <button id="clear-data-btn" class="control-btn danger">مسح بيانات الفصل</button>
+            <input type="file" id="import-file-input" accept=".json" style="display: none;">
+        </div>
+        <div class="table-container">
+            <table id="students-table">
+                <thead>
+                    <tr id="table-dates-row">
+                        <!-- Date input headers will be inserted here by TypeScript -->
+                    </tr>
+                    <tr id="table-header-row">
+                        <!-- Header cells will be inserted here by TypeScript -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Student rows will be inserted here by TypeScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirm-modal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <h3 id="modal-title">تأكيد الحذف</h3>
+            <p id="modal-text">هل أنت متأكد من أنك تريد حذف هذا الطالب؟</p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="control-btn">إلغاء</button>
+                <button id="modal-confirm-btn" class="control-btn danger">تأكيد الحذف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Students Modal -->
+    <div id="import-students-modal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="import-modal-title">
+        <div class="modal-content">
+            <h3 id="import-modal-title">استيراد أسماء الطلاب</h3>
+            <p>الصق قائمة الأسماء هنا. ضع كل اسم في سطر جديد.</p>
+            <textarea id="students-paste-area" rows="10" placeholder="الطالب الأول
+الطالب الثاني
+الطالب الثالث
+..."></textarea>
+            <div class="modal-actions">
+                <button id="modal-import-cancel-btn" class="control-btn">إلغاء</button>
+                <button id="modal-import-confirm-btn" class="control-btn">استيراد</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Student Report Modal -->
+    <div id="report-modal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+        <div class="modal-content report-modal-content">
+            <div id="printable-report">
+                <h2 id="report-modal-title" class="report-main-title">تقرير متابعة الطالب</h2>
+                <!-- Report header info -->
+                <div class="report-header">
+                    <p><strong>اسم الطالب:</strong> <span id="report-student-name"></span></p>
+                    <p><strong>الفصل:</strong> <span id="report-class-name"></span></p>
+                    <p><strong>تاريخ التقرير:</strong> <span id="report-date"></span></p>
+                </div>
+                <!-- Summary section -->
+                <h3>ملخص الأداء</h3>
+                <div class="report-summary">
+                    <!-- Positive points -->
+                    <div class="summary-card positive">
+                        <h4>النقاط الإيجابية</h4>
+                        <p><strong>المشاركات:</strong> <span id="report-musharaka"></span></p>
+                        <p><strong>الواجبات:</strong> <span id="report-wajibat"></span></p>
+                        <p><strong>البحوث:</strong> <span id="report-buhuth"></span></p>
+                        <p class="total"><strong>المجموع:</strong> <span id="report-positive-points"></span></p>
+                    </div>
+                    <!-- Negative points -->
+                    <div class="summary-card negative">
+                         <h4>النقاط السلبية</h4>
+                        <p><strong>التأخر:</strong> <span id="report-taakhur"></span></p>
+                        <p><strong>النوم:</strong> <span id="report-nawm"></span></p>
+                        <p><strong>استخدام الجوال:</strong> <span id="report-jawwal"></span></p>
+                        <p class="total"><strong>المجموع:</strong> <span id="report-negative-points"></span></p>
+                    </div>
+                </div>
+                <div class="report-final-score">
+                    <strong>النتيجة النهائية:</strong> <span id="report-final-points"></span>
+                </div>
+                <!-- Detailed Log -->
+                <h3>سجل الحصص المفصل</h3>
+                <div class="table-container report-table-container">
+                    <table id="report-details-table">
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>الحضور</th>
+                                <th>التفاصيل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-details-tbody">
+                            <!-- Rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-actions no-print">
+                <button id="modal-report-close-btn" class="control-btn">إغلاق</button>
+                <button id="modal-report-print-btn" class="control-btn">طباعة</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
